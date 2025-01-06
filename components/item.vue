@@ -26,7 +26,7 @@ defineProps<{item: Item}>();
 
 <style lang="scss">
 .box-sneak {
-    background-color: var(--input);
+    background-color: var(--background2);
     display: flex;
     width: 300px;
     padding: 1.5rem;

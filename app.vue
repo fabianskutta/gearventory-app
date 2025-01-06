@@ -16,7 +16,7 @@ const route = useRoute();
 const showNav = ref(true);
 
 const checkRoute = () => {
-  showNav.value = !['/login', '/register'].includes(route.path);
+  showNav.value = !['/print', '/login', '/register'].includes(route.path);
 };
 
 onMounted(() => {

@@ -1,6 +1,6 @@
 <template>
     <nav class="nav-container">
-      <h1>Gearventory</h1>
+      <img class="logo" src="/Gearventory.png" alt="">
       <ul class="nav-list">
         <li>
           <NuxtLink to="/" class="nav-link" exact-active-class="active">
@@ -11,20 +11,40 @@
         <li>
           <NuxtLink to="/items" class="nav-link" exact-active-class="active">
             <span class="icon">📦</span>
-            Items
+            Artikel
           </NuxtLink>
         </li>
         <li>
-          <NuxtLink to="/" class="nav-link" exact-active-class="active">
+          <NuxtLink to="/sets" class="nav-link" exact-active-class="active">
             <span class="icon">🛠️</span>
             Sets
           </NuxtLink>
         </li>
+        <li>
+          <NuxtLink to="/productions" class="nav-link" exact-active-class="active">
+            <span class="icon">📋</span>
+            Produktionen
+          </NuxtLink>
+        </li>
+        <li>
+          <NuxtLink to="/contacts" class="nav-link" exact-active-class="active">
+            <span class="icon">👤</span>
+            Kontakte
+          </NuxtLink>
+        </li>
+        <li>
+          <NuxtLink to="/scanner" class="nav-link" exact-active-class="active">
+            <span class="icon">📷</span>
+            Scanner
+          </NuxtLink>
+        </li>
+
+
       </ul>
       <div class="account-section">
-        <NuxtLink to="/" class="nav-link account-link">
+        <NuxtLink to="/account" class="nav-link account-link" exact-active-class="active">
           <span class="icon">👤</span>
-          Your Account
+          Dein Konto
         </NuxtLink>
         <button class="logout-button" @click="signOut()">
           <span class="icon">🚪</span>
@@ -46,6 +66,10 @@
   </script>
   
   <style>
+.logo {
+  margin-bottom: 1rem;
+}
+
   .nav-container {
     width: 250px;
     background-color: var(--background2);
