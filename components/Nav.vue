@@ -15,25 +15,25 @@
           </NuxtLink>
         </li>
         <li>
-          <NuxtLink to="/sets" class="nav-link" exact-active-class="active">
+          <NuxtLink class="nav-link" exact-active-class="active">
             <span class="icon">🛠️</span>
             Sets
           </NuxtLink>
         </li>
         <li>
-          <NuxtLink to="/productions" class="nav-link" exact-active-class="active">
+          <NuxtLink class="nav-link" exact-active-class="active">
             <span class="icon">📋</span>
-            Produktionen
+            Aufträge
           </NuxtLink>
         </li>
         <li>
-          <NuxtLink to="/contacts" class="nav-link" exact-active-class="active">
+          <NuxtLink class="nav-link" exact-active-class="active">
             <span class="icon">👤</span>
             Kontakte
           </NuxtLink>
         </li>
         <li>
-          <NuxtLink to="/scanner" class="nav-link" exact-active-class="active">
+          <NuxtLink class="nav-link" exact-active-class="active">
             <span class="icon">📷</span>
             Scanner
           </NuxtLink>

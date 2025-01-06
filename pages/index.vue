@@ -3,7 +3,6 @@
       <h1>Gesamtwert aller Artikel</h1>
       <p><strong>Wert in €: </strong>{{ totalValue.toFixed(2) }}</p>
     </div>
-    <a href="https://nexaplan.lemonsqueezy.com/buy/97b21dd8-5fc3-43e0-94e5-bd6b25e955e0?embed=1" class="lemonsqueezy-button">Buy Gearventory - Pro</a>
   </template>
   
   <script setup>

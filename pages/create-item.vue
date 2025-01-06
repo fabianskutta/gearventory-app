@@ -30,14 +30,6 @@
         <input type="number" v-model="item.quantity" placeholder="0" />
       </p>
   
-      <p>
-        <strong>Bulk-Artikel: </strong>
-        <label>
-          <input type="checkbox" v-model="item.bulk_item" />
-          Ja
-        </label>
-      </p>
-  
       <button class="btn" @click="createItem">Erstellen</button>
     </div>
   </template>

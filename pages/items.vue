@@ -4,19 +4,17 @@
             <input 
                 type="text" 
                 v-model="searchQuery" 
-                placeholder="Search items..." 
+                placeholder="Suche" 
                 class="search-input"
             />
             <NuxtLink to="/create-item" class="btn">
-                Artikel erstellen
+                Artikel ➕
             </NuxtLink>
-        </div>
 
-        <!-- Toggle button to switch views -->
-        <div class="view-toggle">
-            <button class="btn" @click="showTable = !showTable">
-                {{ showTable ? "Wechsle zur Kachelansicht" : "Wechsle zur Tabellenansicht" }}
-            </button>
+            <!-- Toggle button to switch views -->
+            <button class="btn view-toggle" @click="showTable = !showTable">
+                {{ showTable ? "🖼️" : "📊" }}
+            </button> 
         </div>
 
         <!-- Items Display as Boxes -->
@@ -68,7 +66,7 @@
                                 v-model="item.value" 
                                 type="number" 
                                 placeholder="0.00"
-                                class="input-cell"
+                                class="input-cell value"
                                 @blur="saveItem(item)"
                             />
                         </td>
@@ -84,8 +82,13 @@
                         <td>
                             <div class="tb-btn">
                                 <NuxtLink :to="`/item/${item.id}`" class="btn">
-                                    Öffnen
+                                    🔍
                                 </NuxtLink>
+                                <div class="tb-btn">
+                                <NuxtLink @click="deleteItem(item)" class="btn">
+                                    🚮
+                                </NuxtLink>
+                            </div>
                             </div>
                         </td>
                     </tr>
@@ -96,6 +99,24 @@
 </template>
 
 <style scoped>
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.search-input {
+    flex-grow: 1;
+    padding: 14px;
+    font-size: 1rem;
+}
+
+.view-toggle {
+    margin-left: auto;
+}
+
 .boxes {
     margin-top: 2rem;
     display: flex;
@@ -118,6 +139,7 @@
 .table-view th, .table-view td {
     padding: 8px 12px;
     border: 1px solid #ffffff00;
+    font-size: 1rem;
 }
 
 .gid {
@@ -127,14 +149,15 @@
 .tb-btn {
     display: flex;
     justify-content: center;
+}
 
-    .btn {
+.tb-btn .btn {
     background-color: var(--accent1);
     color: white;
     padding: 12px 20px;
-    font-size: 14px
+    font-size: 14px;
 }
-}
+
 .table-view th, .table-view td {
     padding: 5px 12px;
     border: 1px solid #ffffff00;
@@ -143,63 +166,63 @@
 /* Spezifische Spaltenbreiten anpassen */
 .table-view th:nth-child(2), /* Name */
 .table-view td:nth-child(2) {
-    width: 40%; /* Name bekommt 30% der Gesamtbreite */
+    width: 40%;
 }
 
 .table-view th:nth-child(3), /* Anzahl */
 .table-view td:nth-child(3) {
-    width: 10%; /* Anzahl bekommt 15% der Gesamtbreite */
+    width: 10%;
 }
 
 .table-view th:nth-child(4), /* Preis */
 .table-view td:nth-child(4) {
-    width: 10%; /* Preis bekommt 15% der Gesamtbreite */
+    width: 10%;
 }
 
 .table-view th:nth-child(5), /* Lagerort */
 .table-view td:nth-child(5) {
-    width: 25%; /* Lagerort bekommt 25% */
+    width: 25%;
 }
 
 .table-view th:nth-child(6), /* Speichern */
 .table-view td:nth-child(6) {
-    width: 10%; /* Speichern bekommt 15% */
+    width: 10%;
 }
-
-
 </style>
 
 <script setup>
 import { ref, computed } from 'vue';
 
-// Supabase und Query-Ref.
 const client = useSupabaseClient();
-const searchQuery = ref(""); // Suchtext als lokale Referenz
-const showTable = ref(true); // Flag für den View-Toggle
+const searchQuery = ref("");
+const showTable = ref(true);
 
-// Daten vom Backend laden
-const { data: items } = await useAsyncData('items', async () => {
+const { data: items, refresh: refreshItems} = await useAsyncData('items', async () => {
     const { data } = await client.from('items').select('*');
-    return data || []; // Fallback, falls keine Daten vorhanden sind
+    return data || [];
 });
 
-// Computed Property für die gefilterten Items
 const filteredItems = computed(() => {
     if (!searchQuery.value.trim()) {
-        // Alle Items anzeigen, wenn die Suchanfrage leer ist
         return items.value;
     }
-    // Filterung der Items basierend auf der Suchanfrage, wenn item.name existiert
-    return items.value.filter(item => {
-        return item.name?.toLowerCase().includes(searchQuery.value.toLowerCase());
-    });
+    return items.value.filter(item => 
+        item.name?.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
 });
 
-// Speichern der geänderten Daten (auf das Backend übertragen)
 const saveItem = async (item) => {
     const { error } = await client.from('items').upsert([item], { returning: 'minimal' });
     if (error) {
         console.error("Fehler beim Speichern:", error);
     }
+};
+
+const deleteItem = async (item) => {
+    const { error } = await client.from('items').delete().eq('id', item.id);
+    if (error) {
+        console.error("Fehler beim Löschen:", error);
+    }
+    refreshItems();
 };
 </script>
