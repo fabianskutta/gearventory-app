@@ -11,7 +11,7 @@
         <li>
           <NuxtLink to="/items" class="nav-link" exact-active-class="active">
             <span class="icon">📦</span>
-            Artikel
+            Materialien
           </NuxtLink>
         </li>
         <li>

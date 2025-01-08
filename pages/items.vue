@@ -8,90 +8,53 @@
                 class="search-input"
             />
             <NuxtLink to="/create-item" class="btn">
-                Artikel ➕
+                Material ➕
             </NuxtLink>
-
-            <!-- Toggle button to switch views -->
-            <button class="btn view-toggle" @click="showTable = !showTable">
-                {{ showTable ? "🖼️" : "📊" }}
-            </button> 
         </div>
 
-        <!-- Items Display as Boxes -->
-        <div v-if="!showTable" class="boxes">
-            <Item 
-                v-for="item in filteredItems" 
-                :item="item" 
-                :key="item.id"
-            />
-        </div>
-
-        <!-- Items Display as a Table -->
-        <div v-if="showTable" class="table-view">
+        <div class="table-view">
             <table>
                 <thead>
                     <tr>
-                        <th>id</th>
+                        <th><input type="checkbox"></th>
+                        <th>ID</th>
                         <th>Name</th>
-                        <th>Anzahl</th>
+                        <th>Menge</th>
                         <th>Preis</th>
                         <th>Lagerort</th>
-                        <th>Öffnen</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="item in filteredItems" :key="item.id">
-                        <td>
-                            <p class="gid">{{ item.gid }}</p>
-                        </td>
-                        <td>
-                            <input 
-                                v-model="item.name" 
-                                placeholder="Nicht angegeben" 
-                                class="input-cell"
-                                @blur="saveItem(item)"
-                            />
-                        </td>
-                        <td>
-                            <input 
-                                v-model="item.quantity" 
-                                type="number" 
-                                placeholder="0"
-                                class="input-cell"
-                                @blur="saveItem(item)"
-                            />
-                        </td>
-                        <td>
-                            <input 
-                                v-model="item.value" 
-                                type="number" 
-                                placeholder="0.00"
-                                class="input-cell value"
-                                @blur="saveItem(item)"
-                            />
-                        </td>
-                        <td>
-                            <input 
-                                v-model="item.storage_location" 
-                                type="text" 
-                                placeholder="Unbekannt"
-                                class="input-cell"
-                                @blur="saveItem(item)"
-                            />
-                        </td>
-                        <td>
+    <td>
+        <input type="checkbox">
+    </td>
+    <td>
+        <p class="cell">{{ item.gid }}</p>
+    </td>
+    <td>
+        <p class="cell">{{ item.name || 'Nicht angegeben' }}</p>
+    </td>
+    <td>
+        <p class="cell">{{ item.quantity || 0 }}</p>
+    </td>
+    <td>
+        <p class="cell">{{ item.value ? item.value.toFixed(2) : '0.00' }} €</p>
+    </td>
+    <td>
+        <p class="cell">{{ item.storage_location || 'Unbekannt' }}</p>
+    </td>
+    <td>
                             <div class="tb-btn">
                                 <NuxtLink :to="`/item/${item.id}`" class="btn">
-                                    🔍
+                                    öffnen
                                 </NuxtLink>
                                 <div class="tb-btn">
-                                <NuxtLink @click="deleteItem(item)" class="btn">
-                                    🚮
-                                </NuxtLink>
                             </div>
                             </div>
                         </td>
-                    </tr>
+</tr>
+
                 </tbody>
             </table>
         </div>
@@ -113,15 +76,6 @@
     font-size: 1rem;
 }
 
-.view-toggle {
-    margin-left: auto;
-}
-
-.boxes {
-    margin-top: 2rem;
-    display: flex;
-    flex-wrap: wrap;
-}
 
 .table-view {
     margin-top: 2rem;
@@ -137,57 +91,81 @@
 }
 
 .table-view th, .table-view td {
-    padding: 8px 12px;
     border: 1px solid #ffffff00;
     font-size: 1rem;
+    text-align: left;
+    padding: 8px 10px;
 }
 
-.gid {
-    text-align: center;
-}
 
 .tb-btn {
     display: flex;
-    justify-content: center;
 }
 
 .tb-btn .btn {
-    background-color: var(--accent1);
+    background-color: #ffffff49;
     color: white;
-    padding: 12px 20px;
+    padding: 10px 20px;
     font-size: 14px;
 }
 
-.table-view th, .table-view td {
-    padding: 5px 12px;
-    border: 1px solid #ffffff00;
+.cell {
+    margin: 0;
 }
 
-/* Spezifische Spaltenbreiten anpassen */
-.table-view th:nth-child(2), /* Name */
+input[type="checkbox"] {
+    appearance: none;
+    width: 5px;
+    height: 5px;
+    margin: 0;
+    border: 1px solid #ffffff49;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    outline: none;
+    background-color: var(--background2);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    padding: 10px;
+}
+
+input[type="checkbox"]:checked {
+    background-color: var(--accent1);
+    border-color: var(--accent1);
+}
+
+input[type="checkbox"]:checked::before {
+    content: "✔";
+    font-size: 14px;
+    color: #fff;
+    display: block;
+    text-align: center;
+    line-height: 20px;
+}
+
+
+.table-view td:nth-child(1) {
+    width: 50px;
+}
+
 .table-view td:nth-child(2) {
-    width: 40%;
+    width: 100px;
 }
 
-.table-view th:nth-child(3), /* Anzahl */
-.table-view td:nth-child(3) {
-    width: 10%;
-}
-
-.table-view th:nth-child(4), /* Preis */
 .table-view td:nth-child(4) {
-    width: 10%;
+    width: 100px;
 }
 
-.table-view th:nth-child(5), /* Lagerort */
 .table-view td:nth-child(5) {
-    width: 25%;
+    width: 120px;
 }
 
-.table-view th:nth-child(6), /* Speichern */
-.table-view td:nth-child(6) {
-    width: 10%;
+.table-view td:nth-child(7) {
+    width: 100px;
 }
+
+
 </style>
 
 <script setup>
@@ -195,7 +173,6 @@ import { ref, computed } from 'vue';
 
 const client = useSupabaseClient();
 const searchQuery = ref("");
-const showTable = ref(true);
 
 const { data: items, refresh: refreshItems} = await useAsyncData('items', async () => {
     const { data } = await client.from('items').select('*');
@@ -211,12 +188,6 @@ const filteredItems = computed(() => {
     );
 });
 
-const saveItem = async (item) => {
-    const { error } = await client.from('items').upsert([item], { returning: 'minimal' });
-    if (error) {
-        console.error("Fehler beim Speichern:", error);
-    }
-};
 
 const deleteItem = async (item) => {
     const { error } = await client.from('items').delete().eq('id', item.id);
