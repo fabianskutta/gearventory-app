@@ -1,59 +1,89 @@
 <template>
   <div class="container">
-    <p>
-      <strong>Artikelnummer: </strong>
-      {{ item.gid }}
-    </p>
-    <br><br>
-    <qrcode-vue
-      :value="item.gid"
-      :size="100"
-      class="qr-code"
-    ></qrcode-vue>
+    <div class="controls">
+      <div class="controls-left">
+        {{ item.gid }}&nbsp;-&nbsp;<strong>{{ item.name }}</strong>
+      </div>
+      <div class="controls-right">
+        <NuxtLink  class="btn close" @click="close">Schließen</NuxtLink>
+        <NuxtLink  class="btn" @click="saveItem">Speichern</NuxtLink>
+      </div>
+    </div>
+    <div class="tabs">
+      <button
+        :class="{ active: currentTab === 'data' }"
+        @click="setCurrentTab('data')"
+        class="tab-btn"
+      >
+        Daten
+      </button>
+      <button v-if="item.bulk_item === false"
+        :class="{ active: currentTab === 'serials' }"
+        @click="setCurrentTab('serials')"
+        class="tab-btn"
+      >
+        Seriennummer
+      </button>
+      <button v-if="item.bulk_item === true"
+        :class="{ active: currentTab === 'stock' }"
+        @click="setCurrentTab('stock')"
+        class="tab-btn"
+      > Bestand
+      </button>
+      <button
+        :class="{ active: currentTab === 'accessories' }"
+        @click="setCurrentTab('accessories')"
+        class="tab-btn"
+      > Zubehör
+      </button>
+    </div>
 
-    <p>
-      <strong>Name: </strong>
-      <input type="text" v-model="item.name" />
-    </p>
+    <div class="tab-container">
+      <div v-if="currentTab === 'data'" class="tab-content">
+        <div class="grid">
+          <p class="gid-field">
+            <strong>ID: </strong>
+            <input type="text" v-model="item.gid"/>
+          </p>
+          <p class="name-field">
+            <strong>Name: </strong>
+            <input type="text" v-model="item.name"/>
+          </p>
+        </div>
 
-    <p>
-  <strong>Beschreibung: </strong>
-  <textarea 
-    v-model="item.description" 
-    placeholder="Keine Beschreibung" 
-    rows="5" 
-    cols="10" 
-    style="resize: none; overflow-y: auto;">
-  </textarea>
-</p>
+        <p>
+          <strong>Beschreibung: </strong>
+          <textarea v-model="item.description" placeholder="Keine Beschreibung" rows="5" cols="10" style="resize: none; overflow-y: auto;"></textarea>
+        </p>
 
+        <p>
+          <strong>Wert in €: </strong>
+          <input type="number" step="0.1" v-model="item.value" placeholder="Nicht angegeben" />
+        </p>
 
+        <p>
+          <strong>Lagerort: </strong>
+          <input type="text" v-model="item.storage_location" placeholder="Unbekannt" />
+        </p>
 
-    <p>
-      <strong>Wert in €: </strong>
-      <input type="number" step="0.1" v-model="item.value" placeholder="Nicht angegeben" />
-    </p>
+        <p>
+          <strong>Bestandsberechnungsmethode: </strong>
+          <select v-model="item.bulk_item">
+            <option value="true">Massenartikel</option>
+            <option value="false">Seriennummern</option>
+          </select>
+        </p>
 
-    <p>
-      <strong>Lagerort: </strong>
-      <input type="text" v-model="item.storage_location" placeholder="Unbekannt" />
-    </p>
+        <p>
+          <strong>Kategorie: </strong>
+          <input type="text" v-model="item.category" placeholder="Unbekannt" />
+        </p>
 
-    <p>
-      <strong>Menge: </strong>
-      <input type="number" v-model="item.quantity" placeholder="0" />
-    </p>
-
-    <button class="btn" @click="saveItem">Speichern</button>
-    <!--<button class="btn" @click="deleteItem()">Löschen</button>-->
-
-    <div v-if="!item.bulk_item" class="individual-items">
-      <h3>Individuelle Geräte:</h3>
-      <ul>
-        <li v-for="device in devices" :key="device.id">
-          ID: {{ item.gid }}.{{ device.serial_number }}
-        </li>
-      </ul>
+        <p>
+          <strong>Typ: </strong>
+          <input type="text" v-model="item.type" placeholder="Unbekannt" />
+        </p>
+      </div>
     </div>
   </div>
 </template>
@@ -65,6 +95,8 @@ const { id } = useRoute().params;
 const router = useRouter();
 
 const item = ref({});
+const currentTab = ref('data');
+
 const { data: devices } = await useAsyncData('devices', async () => {
   const { data } = await client.from('devices').select('*').eq('item_id', id);
   return data;
@@ -79,90 +111,106 @@ const { data } = await useAsyncData('items', async () => {
   item.value = data;
 });
 
-async function saveItem() {
-  const { data, error } = await client.from('items').update({
-    name: item.value.name,
-    description: item.value.description,
-    value: item.value.value,
-    storage_location: item.value.storage_location,
-    quantity: item.value.quantity,
-  }).eq('id', id).select();
-
-  if (error) {
-    console.error("Fehler beim Speichern der Änderungen:", error);
-  } else {
-    console.log("Änderungen wurden erfolgreich gespeichert!", data);
-    router.push('/items');
-  }
+function close() {
+  navigateTo(`/items`);
 }
 
-async function deleteItem() {
-  const { error } = await client.from('items').delete().eq('id', id);
-
-  if (error) {
-    console.error("Fehler beim Löschen des Items:", error);
-  } else {
-    console.log("Item wurde erfolgreich gelöscht!");
-    router.push('/items');
-  }
+function setCurrentTab(tab) {
+  currentTab.value = tab;
 }
 </script>
 
 <style scoped>
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-    border-radius: 12px;
-    background-color: var(--background2);
+.container {
     display: flex;
     flex-direction: column;
-    padding: 20px;
-    position: relative;
-  }
-  p {
-    margin: 10px 0;
-    color: var(--text1);
-    font-size: 1.1rem;
-  }
-  input, label, button {
-    padding: 10px;
-    font-size: 1rem;
+    height: calc(100vh - 40px);
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    .close {
+      background-color: #ffffff49;
+    }
+}
+
+.controls-left,
+.controls-right {
+  display: flex;
+  align-items: center;
+}
+
+.controls-left strong {
+  font-size: 1.1rem;
+}
+
+.controls-right .btn {
+  margin-left: 10px;
+}
+
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+
+.tab-container {
+  display: flex;
+  justify-content: center;
+}
+
+.tab-content {
     width: 100%;
-  }
+    background-color: var(--background2);
+    border-radius: 12px;
+    padding: 10px 20px 10px 20px;
+    max-width: 800px;
+}
 
-  input[type="number"], input[type="text"], input[type="checkbox"] {
-    font-size: 1.1rem;
-    width: 100%;
-    padding: 8px;
-    margin-top: 8px;
-  }
-  input[type="checkbox"] {
-    width: auto;
-  }
+.tab-btn {
+  background-color: #ffffff49;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 1rem;
+  white-space: nowrap;
+  font-weight: 500;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  font-family: 'Inter', sans-serif;
+}
 
-  .qr-code {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    max-width: 70px;
-    border-radius: 8px;
-  }
+.tab-btn.active {
+  background-color: var(--accent1);
+}
 
-  .individual-items {
-    margin-top: 20px;
-    padding-top: 10px;
-    border-top: 1px solid #ccc;
-  }
-  .individual-items h3 {
-    margin-bottom: 10px;
-    font-size: 1.2rem;
-  }
-  ul {
-    list-style-type: none;
-    padding-left: 0;
-  }
-  li {
-    margin: 8px 0;
-    font-size: 1rem;
-  }
+.gid-field {
+  width: 100px;
+}
+
+.name-field {
+  width: 100%;
+}
+
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+  font-size: 1rem;
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+}
+
+.grid {
+  display: flex;
+  gap: 20px;
+}
+
 </style>

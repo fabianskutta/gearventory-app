@@ -16,14 +16,8 @@
         </li>
         <li>
           <NuxtLink class="nav-link" exact-active-class="active">
-            <span class="icon">🛠️</span>
-            Sets
-          </NuxtLink>
-        </li>
-        <li>
-          <NuxtLink class="nav-link" exact-active-class="active">
             <span class="icon">📋</span>
-            Aufträge
+            Projekte
           </NuxtLink>
         </li>
         <li>
@@ -79,6 +73,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    font-weight: 500;
   }
   
   .nav-list {
